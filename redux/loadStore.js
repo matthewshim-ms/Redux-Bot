@@ -24,6 +24,7 @@ module.exports = function loadStore(session) {
   );
 
   production || store.subscribe(() => {
+    // TODO: Save store
     session.send({
       type: 'event',
       name: 'store',
