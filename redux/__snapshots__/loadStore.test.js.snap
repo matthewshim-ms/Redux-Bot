@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`"add burger" intent 1`] = `
+Object {
+  "cart": Object {
+    "items": Array [
+      "burger",
+    ],
+  },
+}
+`;

@@ -7,7 +7,6 @@ const createSagas = require('./sagas');
 const production = process.env.NODE_ENV === 'production';
 
 module.exports = function loadStore(session) {
-  const { id } = session.message.address;
   const saga = createSagaMiddleware();
   const store = createStore(
     combineReducers({ cart }),
