@@ -1,20 +1,23 @@
 {
-  "name": "redux-cart-bot",
+  "name": "redux-bot",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "start": "npx concurrently --names \"bot,web\" --kill-others \"npx node-dev .\" \"npx serve -p 3000 .\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
+  "private": true,
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "botbuilder": "^3.14.0",
     "dotenv": "^5.0.1",
-    "jest": "^22.4.3",
     "redux": "^3.7.2",
     "redux-saga": "^0.16.0",
     "restify": "^6.3.4"
+  },
+  "devDependencies": {
+    "jest": "^22.4.3"
   }
 }
