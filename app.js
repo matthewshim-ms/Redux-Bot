@@ -45,9 +45,9 @@ bot.dialog('/', [(session, args, next) => {
   store.dispatch(DialogActions.end());
 }]);
 
-const HOISTED_INTENTS = ['AddItem', 'Delete', 'UpdateItem', 'Checkout'];
+const HOISTED_LUIS_INTENTS = ['AddItem', 'Delete', 'UpdateItem', 'Checkout'];
 
-HOISTED_INTENTS.forEach(name => {
+HOISTED_LUIS_INTENTS.forEach(name => {
   bot.dialog(`/${ name }`, [(session, args, next) => {
     const store = loadStore(session);
 
@@ -60,3 +60,26 @@ HOISTED_INTENTS.forEach(name => {
   });
 });
 
+const CartActions = require('./redux/cartActions');
+
+const REGEXP_ACTIONS = {
+  [CartActions.VIEW_CART]: /^view(.*)/
+};
+
+Object.keys(REGEXP_ACTIONS).forEach(action => {
+  bot.dialog(`/${ action }`, [(session, args, next) => {
+    const { attachments, text } = session.message;
+    const store = loadStore(session);
+
+    store.dispatch({
+      type: action,
+      payload: {
+        attachments,
+        matches: [].slice.call(REGEXP_ACTIONS[action].exec(text) || []),
+        text
+      }
+    });
+  }]).triggerAction({
+    matches: REGEXP_ACTIONS[action]
+  });
+});
