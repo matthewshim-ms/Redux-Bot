@@ -45,7 +45,7 @@ bot.dialog('/', [(session, args, next) => {
   store.dispatch(DialogActions.end());
 }]);
 
-const HOISTED_INTENTS = ['AddItem', 'Delete'];
+const HOISTED_INTENTS = ['AddItem', 'Delete', 'UpdateItem', 'Checkout'];
 
 HOISTED_INTENTS.forEach(name => {
   bot.dialog(`/${ name }`, [(session, args, next) => {
@@ -59,3 +59,4 @@ HOISTED_INTENTS.forEach(name => {
     matches: name
   });
 });
+

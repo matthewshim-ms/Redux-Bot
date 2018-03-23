@@ -41,5 +41,13 @@ module.exports = function (session) {
         console.log('TODO: DELETE ITEM');
       }
     );
+
+    yield takeEery(
+      action => action.type === DialogActions.RECEIVE_LUIS_INTENT && action.payload.intent === 'UpdateItem',
+      function* (action) {
+        // TODO: Update Item
+        console.log('TODO: UPDATE ITEM');
+      }
+    );
   };
 };
