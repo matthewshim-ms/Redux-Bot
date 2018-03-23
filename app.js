@@ -29,8 +29,8 @@ server.post('/api/messages', connector.listen());
 //=========================================================
 
 // TODO: 'shoppingcart' luis app, delete when done
-const LuisKey = '4941fa348c49494db1e8e8d2fd7adb2c'; // Your-LUIS-Key
-const LuisAppID = '4fdecb57-2404-4d0f-954b-4696c41c9b5e'; // Your-LUIS-App-ID
+const LuisAppID = process.env.LUIS_APP_ID; // Your-LUIS-App-ID
+const LuisKey = process.env.LUIS_APP_KEY;  // Your-LUIS-Key
 const LuisModel = `https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/${ LuisAppID }?subscription-key=${ LuisKey }`;
 const recognizer = new builder.LuisRecognizer(LuisModel);
 
