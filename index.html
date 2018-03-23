@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Bot Chat</title>
+
+    <link href="https://unpkg.com/botframework-webchat@0.12.0/botchat.css" rel="stylesheet" />
+
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+      }
+
+      #container {
+        display: flex;
+        height: 100%;
+      }
+
+      #container > div.state {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+
+      #container > div.state > pre {
+        flex: 1;
+        margin: 0;
+        overflow: auto;
+      }
+
+      #container > #botChat {
+        box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+        display: flex;
+        flex-basis: 460px;
+        width: 460px;
+      }
+
+      #container > #botChat .wc-app {
+        flex: 1;
+      }
+
+      #container > #botChat .wc-chatview-panel {
+        height: 100%;
+        position: relative;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <div class="state">
+        <h1>State</h1>
+        <pre>Nothing to see here</pre>
+      </div>
+      <div id="botChat"></div>
+    </div>
+    <script src="https://unpkg.com/botframework-webchat@0.12.0/botchat.js"></script>
+    <script>
+      const params = BotChat.queryParams(location.search);
+
+      const user = {
+        id: params['userid'] || 'userid',
+        name: params['username'] || 'username'
+      };
+
+      const bot = {
+        id: params['botid'] || 'botid',
+        name: params['botname'] || 'botname'
+      };
+
+      window['botchatDebug'] = params['debug'] && params['debug'] === 'true';
+
+      const botConnection = new BotChat.DirectLine({
+        domain: params['domain'],
+        secret: params['s'],
+        token: params['t'],
+        webSocket: params['webSocket'] && params['webSocket'] === 'true' // defaults to true
+      });
+
+      BotChat.App({
+        bot: bot,
+        botConnection: botConnection,
+        // locale: 'es-es', // override locale to Spanish
+        user: user
+      }, document.getElementById('botChat'));
+
+      botConnection.activity$
+        .filter(function (activity) {
+          return activity.type === 'event' && activity.name === 'store';
+        })
+        .subscribe(function (activity) {
+          document.querySelector('pre').innerText = JSON.stringify(activity.value, null, 2);
+        });
+    </script>
+  </body>
+</html>
