@@ -9,10 +9,9 @@ const production = process.env.NODE_ENV === 'production';
 module.exports = function loadStore(session) {
   const { id } = session.message.address;
   const saga = createSagaMiddleware();
-
-  // TODO: Load store using "id"
   const store = createStore(
     combineReducers({ cart }),
+    session.conversationData,
     applyMiddleware(
       saga,
       store => next => action => {
@@ -24,7 +23,9 @@ module.exports = function loadStore(session) {
   );
 
   production || store.subscribe(() => {
-    // TODO: Save store
+    session.conversationData = store.getState();
+    session.save();
+
     session.send({
       type: 'event',
       name: 'store',
