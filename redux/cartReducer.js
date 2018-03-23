@@ -1,4 +1,4 @@
-import { CardAction } from 'botbuilder';
+import { CartAction } from 'botbuilder';
 
 const CartActions = require('./cartActions');
 
