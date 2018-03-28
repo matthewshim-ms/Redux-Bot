@@ -1,5 +1,3 @@
-import { CartAction } from 'botbuilder';
-
 const CartActions = require('./cartActions');
 
 const DEFAULT_STATE = {
@@ -17,8 +15,8 @@ module.exports = function cart(state = DEFAULT_STATE, action) {
 
       break;
 
-    case CardAction.DELETE_ITEM:
-      state = { ...state, 
+    case CartActions.DELETE_ITEM:
+      state = { ...state,
         items: [ ...state.items,
           actions.payload.text
         ]
@@ -26,16 +24,16 @@ module.exports = function cart(state = DEFAULT_STATE, action) {
 
       break;
 
-    case CardAction.UPDATE_ITEM:
+    case CartActions.UPDATE_ITEM:
       state = { ...state,
           items: [...state.items,
             actions.payload.text
           ]
       };
-      
+
       break;
 
-    case CardAction.CHECKOUT:
+    case CartActions.CHECKOUT:
     state = { ...state,
       items: [...state.items,
         actions.payload.text

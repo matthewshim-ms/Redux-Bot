@@ -42,7 +42,7 @@ module.exports = function (session) {
       }
     );
 
-    yield takeEery(
+    yield takeEvery(
       action => action.type === DialogActions.RECEIVE_LUIS_INTENT && action.payload.intent === 'UpdateItem',
       function* (action) {
         // TODO: Update Item
