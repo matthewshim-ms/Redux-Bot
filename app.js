@@ -34,52 +34,27 @@ const LuisKey = process.env.LUIS_APP_KEY;  // Your-LUIS-Key
 const LuisModel = `https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/${ LuisAppID }?subscription-key=${ LuisKey }`;
 const recognizer = new builder.LuisRecognizer(LuisModel);
 
-bot.recognizer(recognizer);
+const dialog = new builder.IntentDialog();
 
-bot.dialog('/', [(session, args, next) => {
-  const { attachments, text } = session.message;
+dialog.recognizer(recognizer);
+
+dialog.onBegin((session, args, next) => {
   const store = loadStore(session);
 
-  store.dispatch(DialogActions.receiveMessage(text, attachments));
-  store.dispatch(DialogActions.sendMessage('Sorry, I don\'t know what you say. You can say: add.'));
-  store.dispatch(DialogActions.end());
-}]);
-
-const HOISTED_LUIS_INTENTS = ['AddItem', 'Delete', 'UpdateItem', 'Checkout'];
-
-HOISTED_LUIS_INTENTS.forEach(name => {
-  bot.dialog(`/${ name }`, [(session, args, next) => {
-    const store = loadStore(session);
-
-    // TODO: Don't know why sometimes LUIS hit this dialog route without args
-    if (args) {
-      store.dispatch(DialogActions.receiveLuisIntent(args.intent));
-    }
-  }]).triggerAction({
-    matches: name
-  });
+  store.dispatch(DialogActions.sendMessage('Welcome to Cortoso Burger, we only build finest burgers!'));
 });
 
-const CartActions = require('./redux/cartActions');
+dialog.onDefault((session, args, next) => {
+  const store = loadStore(session);
 
-const REGEXP_ACTIONS = {
-  [CartActions.VIEW_CART]: /^view(.*)/
-};
-
-Object.keys(REGEXP_ACTIONS).forEach(action => {
-  bot.dialog(`/${ action }`, [(session, args, next) => {
+  if (args.intent && args.intent !== 'None') {
+    store.dispatch(DialogActions.receiveLuisIntent(args));
+  } else {
     const { attachments, text } = session.message;
-    const store = loadStore(session);
 
-    store.dispatch({
-      type: action,
-      payload: {
-        attachments,
-        matches: [].slice.call(REGEXP_ACTIONS[action].exec(text) || []),
-        text
-      }
-    });
-  }]).triggerAction({
-    matches: REGEXP_ACTIONS[action]
-  });
+    store.dispatch(DialogActions.receiveMessage(text, attachments));
+    store.dispatch(DialogActions.end());
+  }
 });
+
+bot.dialog('/', dialog);

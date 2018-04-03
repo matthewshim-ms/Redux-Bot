@@ -8,10 +8,10 @@ function end() {
   return { type: END };
 }
 
-function receiveLuisIntent(intent) {
+function receiveLuisIntent({ intent, intents, entities }) {
   return {
     type: RECEIVE_LUIS_INTENT,
-    payload: intent
+    payload: { intent, intents, entities }
   };
 }
 
