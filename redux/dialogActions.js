@@ -1,5 +1,6 @@
 const BEGIN_DIALOG = 'DIALOG/BEGIN_DIALOG';
 const END_DIALOG = 'DIALOG/END_DIALOG';
+const DIALOG_INIT = 'DIALOG/DIALOG_INIT';
 const PROMPT_TEXT = 'DIALOG/PROMPT_TEXT';
 const RECEIVE_INTENT = 'DIALOG/RECEIVE_INTENT';
 const RECEIVE_MESSAGE = 'DIALOG/RECEIVE_MESSAGE';
@@ -16,6 +17,10 @@ function beginDialog(name) {
 
 function endDialog(text) {
   return { type: END_DIALOG, payload: { text } };
+}
+
+function dialogInit() {
+  return { type: DIALOG_INIT };
 }
 
 function promptText(text) {
@@ -60,6 +65,7 @@ function sendMessage(text, attachments) {
 module.exports = {
   BEGIN_DIALOG,
   END_DIALOG,
+  DIALOG_INIT,
   PROMPT_TEXT,
   RECEIVE_DIALOG_RESULT,
   RECEIVE_INTENT,
@@ -69,6 +75,7 @@ module.exports = {
 
   beginDialog,
   endDialog,
+  dialogInit,
   promptText,
   receiveDialogResult,
   receiveIntent,
