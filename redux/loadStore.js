@@ -1,27 +1,31 @@
 const { applyMiddleware, combineReducers, createStore } = require('redux');
 const { default: createSagaMiddleware } = require('redux-saga');
 
-const cart = require('./cartReducer');
-const createSagas = require('./sagas');
+const reducer = require('./reducer');
+const dialogSagas = require('./sagas/dialog');
 
-const production = process.env.NODE_ENV === 'production';
-
-module.exports = function loadStore(session) {
+module.exports = function loadStore(session, sagas) {
   const saga = createSagaMiddleware();
   const store = createStore(
-    combineReducers({ cart }),
+    reducer,
     session.conversationData,
     applyMiddleware(
       saga,
       store => next => action => {
-        production || console.log(action);
+        // console.log(action);
+
+        session.send({
+          type: 'event',
+          name: 'action',
+          value: action
+        });
 
         return next(action);
       }
     )
   );
 
-  production || store.subscribe(() => {
+  store.subscribe(() => {
     session.conversationData = store.getState();
     session.save();
 
@@ -32,7 +36,10 @@ module.exports = function loadStore(session) {
     });
   });
 
-  saga.run(createSagas(session));
+  saga.run(function* () {
+    yield* dialogSagas(session);
+    yield* sagas;
+  });
 
   return store;
 }

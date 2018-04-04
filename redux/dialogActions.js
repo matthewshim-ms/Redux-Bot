@@ -1,16 +1,30 @@
-const END = 'DIALOG/END';
-const RECEIVE_LUIS_INTENT = 'DIALOG/RECEIVE_LUIS_INTENT';
+const BEGIN_DIALOG = 'DIALOG/BEGIN_DIALOG';
+const END_DIALOG = 'DIALOG/END_DIALOG';
+const PROMPT_TEXT = 'DIALOG/PROMPT_TEXT';
+const RECEIVE_INTENT = 'DIALOG/RECEIVE_INTENT';
 const RECEIVE_MESSAGE = 'DIALOG/RECEIVE_MESSAGE';
+const RECEIVE_DIALOG_RESULT = 'DIALOG/RECEIVE_DIALOG_RESULT';
 const SEND_EVENT = 'DIALOG/SEND_EVENT';
 const SEND_MESSAGE = 'DIALOG/SEND_MESSAGE';
 
-function end() {
-  return { type: END };
+function beginDialog(name) {
+  return {
+    type: BEGIN_DIALOG,
+    payload: { name }
+  };
 }
 
-function receiveLuisIntent({ intent, intents, entities }) {
+function endDialog(text) {
+  return { type: END_DIALOG, payload: { text } };
+}
+
+function promptText(text) {
+  return { type: PROMPT_TEXT, payload: { text } };
+}
+
+function receiveIntent({ intent, intents, entities }) {
   return {
-    type: RECEIVE_LUIS_INTENT,
+    type: RECEIVE_INTENT,
     payload: { intent, intents, entities }
   };
 }
@@ -19,6 +33,13 @@ function receiveMessage(text, attachments) {
   return {
     type: RECEIVE_MESSAGE,
     payload: { attachments, text }
+  };
+}
+
+function receiveDialogResult(result) {
+  return {
+    type: RECEIVE_DIALOG_RESULT,
+    payload: { result }
   };
 }
 
@@ -37,14 +58,20 @@ function sendMessage(text, attachments) {
 }
 
 module.exports = {
-  END,
-  RECEIVE_LUIS_INTENT,
+  BEGIN_DIALOG,
+  END_DIALOG,
+  PROMPT_TEXT,
+  RECEIVE_DIALOG_RESULT,
+  RECEIVE_INTENT,
   RECEIVE_MESSAGE,
   SEND_EVENT,
   SEND_MESSAGE,
 
-  end,
-  receiveLuisIntent,
+  beginDialog,
+  endDialog,
+  promptText,
+  receiveDialogResult,
+  receiveIntent,
   receiveMessage,
   sendEvent,
   sendMessage

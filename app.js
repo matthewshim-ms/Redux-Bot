@@ -19,7 +19,7 @@ const DialogActions = require('./redux/dialogActions');
 const server = restify.createServer();
 
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-  console.log('%s listening to %s', server.name, server.url);
+  console.log(`${ server.name } listening to ${ server.url }`);
 });
 
 server.post('/api/messages', connector.listen());
@@ -34,27 +34,41 @@ const LuisKey = process.env.LUIS_APP_KEY;  // Your-LUIS-Key
 const LuisModel = `https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/${ LuisAppID }?subscription-key=${ LuisKey }`;
 const recognizer = new builder.LuisRecognizer(LuisModel);
 
-const dialog = new builder.IntentDialog();
+const DialogSagas = {
+  '/': [require('./redux/sagas/default')],
+  'greet': [require('./redux/sagas/greet'), builder.SimpleDialog],
+  'search': [require('./redux/sagas/search'), builder.SimpleDialog],
+};
 
-dialog.recognizer(recognizer);
+Object.keys(DialogSagas).forEach(name => {
+  const [createSagas, dialogType = builder.IntentDialog] = DialogSagas[name];
+  let dialog;
 
-dialog.onBegin((session, args, next) => {
-  const store = loadStore(session);
+  switch (dialogType) {
+    case builder.IntentDialog:
+      dialog = new builder.IntentDialog().onDefault((session, args, next) => {
+        const store = loadStore(session, createSagas(session));
 
-  store.dispatch(DialogActions.sendMessage('Welcome to Cortoso Burger, we only build finest burgers!'));
-});
+        if (args.intent && args.intent !== 'None') {
+          store.dispatch(DialogActions.receiveIntent(args));
+        } else {
+          const { attachments, text } = session.message;
 
-dialog.onDefault((session, args, next) => {
-  const store = loadStore(session);
+          store.dispatch(DialogActions.receiveMessage(text, attachments));
+        }
+      });
 
-  if (args.intent && args.intent !== 'None') {
-    store.dispatch(DialogActions.receiveLuisIntent(args));
-  } else {
-    const { attachments, text } = session.message;
+      break;
 
-    store.dispatch(DialogActions.receiveMessage(text, attachments));
-    store.dispatch(DialogActions.end());
+    case builder.SimpleDialog:
+      dialog = new builder.SimpleDialog((session, result) => {
+        const store = loadStore(session, createSagas(session));
+
+        store.dispatch(DialogActions.receiveDialogResult(result && result.response));
+      });
+
+      break;
   }
-});
 
-bot.dialog('/', dialog);
+  bot.dialog(name, dialog);
+});
