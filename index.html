@@ -16,13 +16,13 @@
       #container {
         display: flex;
         height: 100%;
-        margin-left: 1em;
       }
 
       #container > div.state {
         display: flex;
         flex: 1;
         flex-direction: column;
+        margin-left: 1em;
       }
 
       #container > div.state > pre {
@@ -52,12 +52,12 @@
   </head>
   <body>
     <div id="container">
+      <div id="botChat"></div>
       <div class="state">
         <h1>Redux server store</h1>
         <pre id="store">Nothing to see here</pre>
         <ul id="actions"></ul>
       </div>
-      <div id="botChat"></div>
     </div>
     <script src="https://unpkg.com/botframework-webchat/botchat.js"></script>
     <script>
@@ -99,8 +99,12 @@
 
           pre.innerText = JSON.stringify(activity.value).substr(0, 150);
           li.appendChild(pre);
-          document.querySelector('ul').appendChild(li);
+          document.querySelector('ul#actions').appendChild(li);
         });
+
+      setInterval(() => {
+        document.querySelector('.wc-shellinput').focus();
+      }, 300);
     </script>
   </body>
 </html>
