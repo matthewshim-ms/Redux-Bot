@@ -28,11 +28,10 @@ server.post('/api/messages', connector.listen());
 // Bot Recognizers
 //=========================================================
 
-// TODO: 'shoppingcart' luis app, delete when done
 // const LuisAppID = process.env.LUIS_APP_ID; // Your-LUIS-App-ID
 // const LuisKey = process.env.LUIS_APP_KEY;  // Your-LUIS-Key
 // const LuisModel = `https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/${ LuisAppID }?subscription-key=${ LuisKey }`;
-const recognizer = new builder.LuisRecognizer(LuisModel);
+// const recognizer = new builder.LuisRecognizer(LuisModel);
 
 bot.dialog('/', new builder.SimpleDialog((session, result) => {
   const store = loadStore(session);
