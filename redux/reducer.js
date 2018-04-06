@@ -1,8 +1,7 @@
-const { RESET, SET_CITY, SET_STAGE, SET_USERNAME } = require('./conversationActions');
+const { RESET, SET_CITY, SET_USERNAME } = require('./conversationActions');
 
 const DEFAULT_STATE = {
   city: null,
-  stage: null,
   username: null
 };
 
@@ -14,10 +13,6 @@ function conversationReducer(state = DEFAULT_STATE, action) {
 
   case SET_CITY:
     state = { ...state, city: action.payload.city };
-    break;
-
-  case SET_STAGE:
-    state = { ...state, stage: action.payload.stage };
     break;
 
   case SET_USERNAME:
