@@ -4,14 +4,6 @@ const { takeEvery } = require('redux-saga/effects');
 const DialogActions = require('../dialogActions');
 
 module.exports = function* (session) {
-  yield takeEvery(DialogActions.BEGIN_DIALOG, function* (action) {
-    session.beginDialog(action.payload.name);
-  });
-
-  yield takeEvery(DialogActions.END_DIALOG, function* (action) {
-    session.endDialog(action.payload.text);
-  });
-
   yield takeEvery(DialogActions.PROMPT_TEXT, function* (action) {
     builder.Prompts.text(session, action.payload.text);
   });
