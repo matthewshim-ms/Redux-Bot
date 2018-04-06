@@ -1,6 +1,5 @@
 const builder = require('botbuilder');
 const { takeEvery } = require('redux-saga/effects');
-
 const DialogActions = require('../dialogActions');
 
 module.exports = function* (session) {

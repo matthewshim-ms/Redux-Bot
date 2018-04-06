@@ -9,10 +9,14 @@ module.exports = function loadStore(session) {
   const saga = createSagaMiddleware();
   const store = createStore(
     reducer,
+
+    // Restore the store from conversationData
     session.conversationData,
+
     applyMiddleware(
       saga,
       store => next => action => {
+        // Send action to web page for debugging
         session.send({
           type: 'event',
           name: 'action',
@@ -25,9 +29,11 @@ module.exports = function loadStore(session) {
   );
 
   store.subscribe(() => {
+    // Save the store to conversationData
     session.conversationData = store.getState();
     session.save();
 
+    // Send store state to web page for debugging
     session.send({
       type: 'event',
       name: 'store',
@@ -41,4 +47,4 @@ module.exports = function loadStore(session) {
   });
 
   return store;
-}
+};
