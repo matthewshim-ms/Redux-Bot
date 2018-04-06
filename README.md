@@ -4,19 +4,34 @@ BotBuilder v3 Node.js bot with Redux state management
 # To-do
 
 * [ ] More tests for Redux
-* [ ] Cleaner code inside `app.js`
+* [X] Cleaner code inside `app.js`
 * [ ] Investigate possibility to use ChatConnector directly
 
 # Hiccups
 
-* I want to have a single type of `Dialog`
-  * I want to use `Prompt.text`
-    * It requires `SimpleDialog` (forever looping dialog)
-      * `SimpleDialog` end dialog will leak the result to the next dialog, e.g. our "search" dialog will automatically pick it up
-    * It doesn't work well with `WaterfallDialog`
-    * All `Dialog` need to be `SimpleDialog`
-  * I want to use `dialog`/`beginDialog`
-* We don't like `triggerActions`
-* We want to have a singleton root dialog
-  * We cannot use `beginDialog`
-  * A lot of `if` inside the saga, but not `takeEvery`
+## Turning `conversationUpdate` event into an action
+
+It would be great if a new member joined, we sent a welcome message right away.
+
+* `bot.on('conversationUpdate')` event handler does not associate with `session` object
+* `session` object is required to create a Redux store
+
+Looking at other sample code on the same scenario, instead of sending the greeting thru `session.send`, it must be sent thru `bot.send` with an addressed message. Thus, it further proves that `conversationUpdate` is not associated with any `session` object.
+
+Because our Redux store design requires `session` object, thus, `conversationUpdate` cannot be turn into an action.
+
+## Multi-turn dialog
+
+It is intuitive to write code in `redux-saga` like this:
+
+```js
+takeEvery(RECEIVE_MESSAGE, function* (action) {
+  yield put(promptText('What is your name?'));
+
+  action = yield take(RECEIVE_RESULT);
+
+  yield put(sendMessage(`Hello, ${ action.payload.response }`);
+});
+```
+
+But this would require a dialog to resume in the middle of a saga (resume at the `yield take` line). Due to the nature of serverless functions, it is difficult to implement a saga that works this way.

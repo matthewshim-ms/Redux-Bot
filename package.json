@@ -4,7 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "npx concurrently --names \"bot,web\" --kill-others \"npx node-dev .\" \"npx serve -p 3000 .\"",
+    "start": "npx concurrently --names \"bot,web\" --kill-others \"npm run start:bot\" \"npm run start:web\"",
+    "start:bot": "npx node-dev .",
+    "start:web": "npx serve -p 3000 public",
     "test": "jest"
   },
   "private": true,

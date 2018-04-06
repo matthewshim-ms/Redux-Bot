@@ -1,39 +1,41 @@
-const { put, select, take, takeEvery } = require('redux-saga/effects');
-
-const { setCity, setStage, setUsername } = require('../conversationActions');
-const { beginDialog, RECEIVE_MESSAGE, sendMessage } = require('../dialogActions');
+const { put, select, takeEvery } = require('redux-saga/effects');
+const { reset, setCity, setUsername } = require('../conversationActions');
+const { promptText, RECEIVE_MESSAGE, sendMessage } = require('../dialogActions');
 
 module.exports = function* (session) {
-  let state, { city, stage, username } = yield select();
+  yield takeEvery(RECEIVE_MESSAGE, function* (action) {
+    const { text } = action.payload;
+    const changeCityMatch = /^change city to (.*)/i.exec(text);
+    const currentCityMatch = /^current city/i.exec(text);
+    const resetMatch = /^reset/i.exec(text)
+    let { city, username } = yield select();
 
-  if (!city) {
-    city = 'Seattle';
-    yield put(setCity(city));
-    yield put(sendMessage(`Welcome to the Search City bot. I\'m currently configured to search for things in ${ city }`));
-    yield put(sendMessage('Before get started, please tell me your name?'));
-  }
+    if (!city) {
+      city = 'Seattle';
 
-  if (!stage) {
-    yield put(setStage('greet'));
-  } else if (stage === 'greet') {
-    if (!username) {
-      const action = yield take(RECEIVE_MESSAGE);
-      const { text } = action.payload;
+      yield put(setCity(city));
+      yield put(sendMessage(`Welcome to the Search City bot. I\'m currently configured to search for things in ${ city }`));
+      yield put(promptText('Before get started, please tell me your name?'));
+    } else if (!username) {
 
-      if (!text) {
-        // yield put(promptText('Before get started, please tell me your name?'));
-      } else {
-        yield put(setUsername(text));
-        yield put(sendMessage(`Welcome ${ text }!\n * If you want to know which city I'm using for my searches type 'current city'. \n * Want to change the current city? Type 'change city to cityName'. \n * Want to change it just for your searches? Type 'change my city to cityName'`));
-        yield put(setStage('search'));
-      }
+      yield put(setUsername(text));
+      yield put(sendMessage(`Welcome ${ text }!\n * If you want to know which city I'm using for my searches type 'current city'. \n * Want to change the current city? Type 'change city to cityName'. \n * Want to change it just for your searches? Type 'change my city to cityName'`));
+    } else if (changeCityMatch) {
+      const newCity = changeCityMatch[1];
+
+      yield put(setCity(newCity));
+      yield put(sendMessage(`All set ${ username }. From now on, all my searches will be for things in ${ newCity }.`));
+    } else if (currentCityMatch) {
+      yield put(sendMessage(`Hey ${ username }, I\'m currently configured to search for things in ${ city }.`));
+    } else if (resetMatch) {
+      yield put(reset());
+      yield put(sendMessage('Ups... I\'m suffering from a memory loss...'));
+    } else {
+      const { city, username } = yield select();
+      const messageText = action.payload.text.trim();
+
+      yield put(sendMessage(`${ username }, wait a few seconds. Searching for \'${ messageText }\' in \'${ city }\'...`));
+      yield put(sendMessage(`https://www.bing.com/search?q=${ encodeURIComponent(`${ messageText } in ${ city }`) }`));
     }
-  } else if (stage === 'search') {
-    const action = yield take(RECEIVE_MESSAGE);
-    const { city, username } = yield select();
-    const messageText = action.payload.text.trim();
-
-    yield put(sendMessage(`${ username }, wait a few seconds. Searching for \'${ messageText }\' in \'${ city }\'...`));
-    yield put(sendMessage(`https://www.bing.com/search?q=${ encodeURIComponent(`${ messageText } in ${ city }`) }`));
-  }
+  });
 };
