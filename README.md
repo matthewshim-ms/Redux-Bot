@@ -37,3 +37,8 @@ takeEvery(RECEIVE_MESSAGE, function* (action) {
 ```
 
 But this would require a dialog to resume in the middle of a saga (resume at the `yield take` line). Due to the nature of serverless functions, it is difficult to implement a saga that works this way.
+
+# References
+* [Redux](https://github.com/reactjs/redux)
+* [Redux-Saga](https://github.com/redux-saga/redux-saga)
+* [BotBuilder SDK](https://github.com/Microsoft/BotBuilder)
