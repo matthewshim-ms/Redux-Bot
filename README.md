@@ -1,4 +1,5 @@
 # Redux-Bot
+![redux-abs-logo](/redux-abs-logo.png)
 BotBuilder v3 Node.js bot with Redux state management
 
 # To-do
