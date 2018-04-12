@@ -43,4 +43,4 @@ But this would require a dialog to resume in the middle of a saga (resume at the
 * [Redux-Saga](https://github.com/redux-saga/redux-saga)
 * [BotBuilder SDK](https://github.com/Microsoft/BotBuilder)
 
-[redux-abs-logo]: ../../images/redux-abs-logo.png
+[redux-abs-logo]: redux-abs-logo.png
